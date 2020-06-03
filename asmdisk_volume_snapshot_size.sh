@@ -93,7 +93,7 @@ do
         v_blk_cnt=`aws ebs list-snapshot-blocks --snapshot-id $v_snap_id_2 | grep "BlockIndex" | wc -l`
         v_incr_size=`expr $v_blk_cnt \* $v_blk_size / 1024 / 1024`
 
-        echo "`date` : Oldest Snap ID = $v_snap_id_2, Snap Time = $v_snap_time_2, Incr Size = $v_incr_size Mb"
+        echo "`date` : Oldest Snap ID = $v_snap_id_2, Snap Time = $v_snap_time_2, Oldest Snap Size = $v_incr_size Mb"
 
         v_first_time=""
 
