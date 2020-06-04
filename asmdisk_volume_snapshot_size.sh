@@ -43,14 +43,14 @@ do
     #
     v_major_minor_num=`ls -l $v_asm_disk_loc/$v_disk_name | tr -s ' ' | awk '{print $5,$6}'`
 
-    #
+	#
     # Below we find the sub-partition name of the device, EBS volume id and its size
-    #
+	#
     v_device=`ls -l /dev/nvme* | tr -s ' ' | grep -w "$v_major_minor_num" | cut -f 10 -d ' '`
     v_vol_id=`sudo nvme id-ctrl -v "$v_device" | grep "^sn" | cut -f 2 -d ':' | sed 's/ vol/vol-/'`
     v_vol_size=`aws ec2 describe-volumes --region $v_region --volume-id $v_vol_id --query "Volumes[0].{SIZE:Size}" | grep "SIZE" | tr -s ' ' | cut -f 3 -d ' '`
 
-    echo "`date` : Below is the EBS Snapshot size for Disk = $v_disk_name, Device Name = $v_device, Volume = $v_vol_id, Current Size = $v_vol_size"
+    echo "`date` : Below is the EBS Snapshot size for Disk = $v_disk_name, Device Name = $v_device, Volume = $v_vol_id, Current Size = $v_vol_size Gb" 
 
     aws ec2 describe-snapshots --filters Name=volume-id,Values="$v_vol_id" --query "Snapshots[*].{SnapshotId:SnapshotId,StartTime:StartTime}" | grep -E "SnapshotId|StartTime" | tr -s ' ' | sed 's/"//g; s/,//g' | tr -s ' ' | cut -f 3 -d  ' '  > $v_aws_op_stg
     v_cnt=`cat $v_aws_op_stg | wc -l`
@@ -58,7 +58,7 @@ do
 
     if [[ $v_cnt -gt 2 ]]
     then
-
+        
         while read v_snap_id_1
         do
             read v_snap_time_1
@@ -69,7 +69,7 @@ do
                 v_snap_time_2=$v_snap_time_1
 
                 read v_snap_id_1
-                read v_snap_time_1
+                read v_snap_time_1 
 
                 v_first_time='NO'
             fi
@@ -85,7 +85,7 @@ do
 
             v_snap_id_2=$v_snap_id_1
             v_snap_time_2=$v_snap_time_1
-
+        
 
         done < $v_aws_op_stg
 
@@ -99,7 +99,7 @@ do
 
         echo ""
     fi
-
+            
 
 
 done
@@ -108,5 +108,6 @@ done
 echo "`date` : Script - $SCRIPT Completed" >>$v_log
 echo "`date` : " >>$v_log
 echo "`date` : " >>$v_log
+
 
 
